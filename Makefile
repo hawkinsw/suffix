@@ -1,4 +1,4 @@
-all: libsuffix.so suffix_test
+all: libsuffix.so suffix_test ls_test
 
 libsuffix.so: suffix.cpp Makefile suffix.hpp suffix.tcc
 	g++ -std=c++11 -g -o libsuffix.so -fPIC -shared suffix.cpp
