@@ -5,6 +5,57 @@ std::ostream &operator<<(std::ostream &os, Locus &locus)
 }
 
 template <class T>
+void SuffixTree<T>::PrintSubstrings(std::ostream &os)
+{
+	for (auto c = m_root->ChildrenBegin();
+	          c != m_root->ChildrenEnd();
+						c++)
+	{
+		T new_base;
+		if (((*c)->Start() >= 0 && (*c)->Stop() >= 0))
+		{
+			for (int i = (*c)->Start(); i<(*c)->Stop(); i++)
+				new_base.push_back(entire[i]);
+		}
+		DoPrintSubstrings(os, *c, new_base);
+	}
+}
+
+template <class T>
+int SuffixTree<T>::DoPrintSubstrings(std::ostream &os, Locus *locus, T base)
+{
+	int child_counter = 0;
+
+	bool has_children = false;
+	for (auto c = locus->ChildrenBegin();
+	          c != locus->ChildrenEnd();
+						c++)
+	{
+		has_children = true;
+		T new_base = base;
+
+		/*
+		 * We would like to be able to do substr()
+		 * here, but we can't guarantee that we have
+		 * that. So, we'll do it the slow way.
+		 */
+		if (((*c)->Start() >= 0 && (*c)->Stop() >= 0))
+		{
+			for (int i = (*c)->Start(); i<(*c)->Stop(); i++)
+				new_base.push_back(entire[i]);
+		}
+		child_counter += DoPrintSubstrings(os, *c, new_base);
+	}
+
+	if (!has_children)
+		child_counter++;
+
+	os << "# " << child_counter << "," << base << std::endl;
+
+	return child_counter;
+}
+
+template <class T>
 void SuffixTree<T>::DoPrint(std::ostream &os, Locus *locus, int ws)
 {
 	for (auto c = locus->ChildrenBegin();

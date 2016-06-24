@@ -43,10 +43,12 @@ class SuffixTree
 			st.DoPrint(os, st.m_root);
 			return os;
 		}
+		void PrintSubstrings(std::ostream &);
 	private:
 		void AddSuffix(unsigned int suffi);
 		void DoInsert(unsigned int offset, Locus *locus);
 		void DoPrint(std::ostream &os, Locus *locus, int ws=0);
+		int DoPrintSubstrings(std::ostream &os, Locus *locus, T base);
 
 		Locus *m_root;
 		T entire;
