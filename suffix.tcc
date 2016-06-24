@@ -71,7 +71,7 @@ void SuffixTree<T>::DoPrint(std::ostream &os, Locus *locus, int ws)
 		 * here, but we can't guarantee that we have
 		 * that. So, we'll do it the slow way.
 		 */
-		if ((*c)->Start() >= 0 && (*c)->Stop() >= 0)
+		if (m_verbose && ((*c)->Start() >= 0 && (*c)->Stop() >= 0))
 		{
 			for (int i = (*c)->Start(); i<(*c)->Stop(); i++)
 				locus_output_string << entire[i];
