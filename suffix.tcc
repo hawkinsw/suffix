@@ -112,6 +112,20 @@ void SuffixTree<T>::DoInsert(unsigned int offset, Locus *locus)
 	if (m_verbose)
 		std::cout << "DoInsert(" << offset << ", " << *locus << ")" << std::endl;
 
+	if (offset >= entire.size())
+	{
+		/*
+		 * Add a "sentinel" locus as a child.
+		 */
+		Locus *terminal = new Locus();
+		terminal->Start() = -1;
+		terminal->Stop() = -1;
+		locus->AddChild(terminal);
+		if (m_verbose)
+			std::cout << "Adding a new terminal locus." << std::endl;
+		return;
+	}
+
 	for (auto c = locus->ChildrenBegin();
 	          c != locus->ChildrenEnd() && !acted;
 						c++)
@@ -134,10 +148,20 @@ void SuffixTree<T>::DoInsert(unsigned int offset, Locus *locus)
 			while (true)
 			{
 				if (m_verbose)
+				{
 					std::cout << "i: " << i << std::endl
-					          << "o: " << o << std::endl
-					          << entire[i] << " == " << entire[o] << std::endl;
-
+					          << "o: " << o << std::endl;
+					if (i<child->Stop())
+						std::cout << entire[i];
+					else
+						std::cout << "-1";
+					std::cout << " == ";
+					if (o<entire.size())
+						std::cout << entire[o];
+					else
+						std::cout << "-1";
+					std::cout << std::endl;
+				}
 				if (i>=child->Stop())
 				{
 					/*
@@ -181,18 +205,6 @@ void SuffixTree<T>::DoInsert(unsigned int offset, Locus *locus)
 				 * on which we just completed a match.
 				 */
 				DoInsert(o, child);
-			}
-			else if (suffix_exhausted)
-			{
-				/* 
-				 * Add a "terminal" link.
-				 */
-				Locus *terminal = new Locus();
-				terminal->Start() = -1;
-				terminal->Stop() = -1;
-				child->AddChild(terminal);
-				if (m_verbose)
-					std::cout << "Adding a new terminal locus." << std::endl;
 			}
 			else
 			{
