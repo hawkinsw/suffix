@@ -53,7 +53,7 @@ class SuffixTree
 		bool m_verbose;
 };
 
-#include "suffix.tpp"
+#include "suffix.tcc"
 
 
 #endif
