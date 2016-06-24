@@ -5,7 +5,7 @@ std::ostream &operator<<(std::ostream &os, Locus &locus)
 }
 
 template <class T>
-void SuffixTree<T>::PrintSubstrings(std::ostream &os)
+void SuffixTree<T>::PrintSubstrings(std::ostream &os, int occurence_filter)
 {
 	for (auto c = m_root->ChildrenBegin();
 	          c != m_root->ChildrenEnd();
@@ -17,12 +17,12 @@ void SuffixTree<T>::PrintSubstrings(std::ostream &os)
 			for (int i = (*c)->Start(); i<(*c)->Stop(); i++)
 				new_base.push_back(entire[i]);
 		}
-		DoPrintSubstrings(os, *c, new_base);
+		DoPrintSubstrings(os, *c, new_base, occurence_filter);
 	}
 }
 
 template <class T>
-int SuffixTree<T>::DoPrintSubstrings(std::ostream &os, Locus *locus, T base)
+int SuffixTree<T>::DoPrintSubstrings(std::ostream &os, Locus *locus, T base, int occurence_filter)
 {
 	int child_counter = 0;
 
@@ -44,13 +44,14 @@ int SuffixTree<T>::DoPrintSubstrings(std::ostream &os, Locus *locus, T base)
 			for (int i = (*c)->Start(); i<(*c)->Stop(); i++)
 				new_base.push_back(entire[i]);
 		}
-		child_counter += DoPrintSubstrings(os, *c, new_base);
+		child_counter += DoPrintSubstrings(os, *c, new_base, occurence_filter);
 	}
 
 	if (!has_children)
 		child_counter++;
 
-	os << "# " << child_counter << "," << base << std::endl;
+	if (child_counter>occurence_filter)
+		os << "# " << child_counter << "," << base << std::endl;
 
 	return child_counter;
 }
