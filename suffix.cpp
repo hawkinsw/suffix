@@ -13,5 +13,6 @@ std::ostream &operator<<(std::ostream &os, Locus &locus)
 		os << t << ",";
 	}
 	os << "]";
+	os << "d: " << std::dec << locus.Descendents();
 	return os;
 }

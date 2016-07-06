@@ -130,8 +130,10 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 		terminal->Stop() = -1;
 		terminal->AddTerminus(offset);
 		terminal->ContractedLocus() = locus;
+		terminal->Descendents() = 1;
 
 		locus->AddChild(terminal);
+		locus->Descendents() += terminal->Descendents();
 
 		if (m_verbose)
 			std::cout << "Adding a new terminal locus." << std::endl;
@@ -246,9 +248,11 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 
 				left->Start() = i;
 				left->Stop() = child->Stop();
+				left->Descendents() = child->Descendents();
 
 				right->Start() = o;
 				right->Stop() = entire.size();
+				right->Descendents() = 1;
 
 				new_child->AddChild(right);
 				new_child->AddChild(left);
@@ -260,6 +264,7 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 				locus->RemoveChild(child);
 				locus->AddChild(new_child);
 				new_child->ContractedLocus() = locus;
+				new_child->Descendents() = left->Descendents() + right->Descendents();
 
 				if (m_verbose)
 					std::cout << "Now is " << *new_child << std::endl
@@ -283,7 +288,9 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 		new_child->Start() = offset;
 		new_child->Stop() = entire.size();
 		new_child->ContractedLocus() = locus;
+		new_child->Descendents() = 1;
 		locus->AddChild(new_child);
+		locus->Descendents() += new_child->Descendents();
 
 		if (m_verbose)
 			std::cout << "New locus: " << *new_child << std::endl;

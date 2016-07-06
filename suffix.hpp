@@ -10,10 +10,11 @@
 class Locus
 {
 	public:
-		Locus() : m_start(0), m_stop(0), m_contracted_locus(NULL) {}
+		Locus() : m_start(0), m_stop(0), m_contracted_locus(NULL), descendents(-1){}
 
 		int &Start() { return m_start; }
 		int &Stop() { return m_stop; }
+		int &Descendents() { return descendents; }
 
 		Locus *&ContractedLocus() { return m_contracted_locus; }
 
@@ -30,6 +31,7 @@ class Locus
 
 	private:
 		int m_start, m_stop;
+		int descendents;
 		std::list<Locus*> children;
 		Locus *m_contracted_locus;
 		std::list<int> match_terminii;
