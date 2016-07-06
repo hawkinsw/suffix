@@ -259,7 +259,6 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 
 				right->Start() = o;
 				right->Stop() = entire.size();
-				right->AddTerminus(o);
 
 				new_child->AddChild(right);
 				new_child->AddChild(left);
@@ -289,7 +288,6 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 		Locus *new_child = new Locus();
 		new_child->Start() = offset;
 		new_child->Stop() = entire.size();
-		new_child->AddTerminus(entire.size());
 		locus->AddChild(new_child);
 
 		if (m_verbose)
