@@ -298,16 +298,12 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 template <template <typename...> class Container, typename Element>
 bool SuffixTree<Container, Element>::not_equal(Element a, Element b)
 {
-	std::cout << "Calling UNspecialized  NE" << std::endl;
-	std::cout << a << " != " << b << std::endl;
 	return a != b;
 }
 
 template <template <typename...> class Container, typename Element>
 bool SuffixTree<Container, Element*>::not_equal(Element *a, Element *b)
 {
-	std::cout << "Calling specialized NE" << std::endl;
-	std::cout << *a << " != " << *b << std::endl;
 	return (*a) != (*b);
 }
 
