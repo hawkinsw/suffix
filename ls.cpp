@@ -4,9 +4,16 @@
 
 using namespace std;
 
+ostream &operator<<(ostream &os, const std::vector<string> &v)
+{
+	for (auto s : v)
+		os << s << ";";
+	return os;
+}
+
 int main()
 {
-	SuffixTree<vector<string>> st(false);
+	SuffixTree<std::vector, string> st(false);
 	vector<string> program;
 
 program.push_back("sub $0x8,%rsp");
@@ -11793,5 +11800,6 @@ program.push_back("retq");
 //program.push_back("SENTINEL");
 	st.Build(program);
 	cout << "st: " << endl << st << endl;
+	st.PrintSubstrings(cout, 3);
 	return 1;
 }
