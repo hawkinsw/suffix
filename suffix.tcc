@@ -147,7 +147,6 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 		if (!not_equal(entire[child->Start()],entire[o]))
 		{
 			bool matches_entirely = false;
-			bool suffix_exhausted = false;
 			unsigned int i = child->Start();
 			
 			acted = true;
