@@ -4,14 +4,14 @@ std::ostream &operator<<(std::ostream &os, Locus &locus)
 	return os;
 }
 
-template <class T>
-void SuffixTree<T>::PrintSubstrings(std::ostream &os, int occurence_filter)
+template <template <typename...> class Container, typename Element>
+void SuffixTreeBase<Container, Element>::PrintSubstrings(std::ostream &os, int occurence_filter)
 {
 	for (auto c = m_root->ChildrenBegin();
 	          c != m_root->ChildrenEnd();
 						c++)
 	{
-		T new_base;
+		Container<Element> new_base;
 		if (((*c)->Start() >= 0 && (*c)->Stop() >= 0))
 		{
 			for (int i = (*c)->Start(); i<(*c)->Stop(); i++)
@@ -21,8 +21,8 @@ void SuffixTree<T>::PrintSubstrings(std::ostream &os, int occurence_filter)
 	}
 }
 
-template <class T>
-int SuffixTree<T>::DoPrintSubstrings(std::ostream &os, Locus *locus, T base, int occurence_filter)
+template <template <typename...> class Container, typename Element>
+int SuffixTreeBase<Container, Element>::DoPrintSubstrings(std::ostream &os, Locus *locus, Container<Element> base, int occurence_filter)
 {
 	int child_counter = 0;
 
@@ -32,7 +32,7 @@ int SuffixTree<T>::DoPrintSubstrings(std::ostream &os, Locus *locus, T base, int
 						c++)
 	{
 		has_children = true;
-		T new_base = base;
+		Container<Element> new_base = base;
 
 		/*
 		 * We would like to be able to do substr()
@@ -56,8 +56,8 @@ int SuffixTree<T>::DoPrintSubstrings(std::ostream &os, Locus *locus, T base, int
 	return child_counter;
 }
 
-template <class T>
-void SuffixTree<T>::DoPrint(std::ostream &os, Locus *locus, int ws)
+template <template <typename...> class Container, typename Element>
+void SuffixTreeBase<Container, Element>::DoPrint(std::ostream &os, Locus *locus, int ws)
 {
 	for (auto c = locus->ChildrenBegin();
 	          c != locus->ChildrenEnd();
@@ -75,7 +75,9 @@ void SuffixTree<T>::DoPrint(std::ostream &os, Locus *locus, int ws)
 		if (m_verbose && ((*c)->Start() >= 0 && (*c)->Stop() >= 0))
 		{
 			for (int i = (*c)->Start(); i<(*c)->Stop(); i++)
-				locus_output_string << entire[i];
+			{
+				locus_output_string << StringifyElement(entire[i]);
+			}
 		}
 		locus_output_string << "->";
 		os << locus_output_string.str() << std::endl;
@@ -85,8 +87,8 @@ void SuffixTree<T>::DoPrint(std::ostream &os, Locus *locus, int ws)
 	}
 }
 
-template <class T>
-void SuffixTree<T>::Build(T obj)
+template <template <typename...> class Container, typename Element>
+void SuffixTreeBase<Container, Element>::Build(Container<Element> obj)
 {
 	entire = obj;
 	m_root = new Locus();
@@ -99,14 +101,16 @@ void SuffixTree<T>::Build(T obj)
 	}
 }
 
-template <class T>
-void SuffixTree<T>::AddSuffix(unsigned int suffi)
+template <template <typename...> class Container, typename Element>
+void SuffixTreeBase<Container, Element>::AddSuffix(unsigned int suffi)
 {
 	DoInsert(suffi, m_root);
 }
 
-template <class T>
-void SuffixTree<T>::DoInsert(unsigned int offset, Locus *locus)
+template <template <typename...> class Container, typename Element>
+void SuffixTreeBase<Container, Element>::DoInsert(
+	unsigned int offset,
+	Locus *locus)
 {
 	bool acted = false;
 
@@ -135,7 +139,8 @@ void SuffixTree<T>::DoInsert(unsigned int offset, Locus *locus)
 		unsigned int o = offset;
 		if (m_verbose)
 			std::cout << "Inspecting child: " << *child << std::endl;
-		if (entire[child->Start()] == entire[o])
+
+		if (!not_equal(entire[child->Start()],entire[o]))
 		{
 			bool matches_entirely = false;
 			bool suffix_exhausted = false;
@@ -185,7 +190,7 @@ void SuffixTree<T>::DoInsert(unsigned int offset, Locus *locus)
 					break;
 				}
 
-				if (entire[i] != entire[o])
+				if (not_equal(entire[i], entire[o]))
 				{
 					/*
 				 	* We found a point of difference.
@@ -260,4 +265,32 @@ void SuffixTree<T>::DoInsert(unsigned int offset, Locus *locus)
 		if (m_verbose)
 			std::cout << "New locus: " << *new_child << std::endl;
 	}
+}
+
+template <template <typename...> class Container, typename Element>
+bool SuffixTree<Container, Element>::not_equal(Element a, Element b)
+{
+	std::cout << "Calling UNspecialized  NE" << std::endl;
+	std::cout << a << " != " << b << std::endl;
+	return a != b;
+}
+
+template <template <typename...> class Container, typename Element>
+bool SuffixTree<Container, Element*>::not_equal(Element *a, Element *b)
+{
+	std::cout << "Calling specialized NE" << std::endl;
+	std::cout << *a << " != " << *b << std::endl;
+	return (*a) != (*b);
+}
+
+template <template <typename...> class Container, typename Element>
+std::string SuffixTree<Container, Element>::StringifyElement(Element a)
+{
+	return std::string(a);
+}
+
+template <template <typename...> class Container, typename Element>
+std::string SuffixTree<Container, Element*>::StringifyElement(Element *a)
+{
+	return std::string(*a);
 }
