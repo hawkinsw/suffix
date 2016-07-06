@@ -129,7 +129,10 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 		terminal->Start() = -1;
 		terminal->Stop() = -1;
 		terminal->AddTerminus(offset);
+		terminal->ContractedLocus() = locus;
+
 		locus->AddChild(terminal);
+
 		if (m_verbose)
 			std::cout << "Adding a new terminal locus." << std::endl;
 		return;
@@ -251,8 +254,12 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 				new_child->AddChild(left);
 				new_child->Terminii(new_child_terminii);
 
+				right->ContractedLocus() = new_child;
+				left->ContractedLocus() = new_child;
+
 				locus->RemoveChild(child);
 				locus->AddChild(new_child);
+				new_child->ContractedLocus() = locus;
 
 				if (m_verbose)
 					std::cout << "Now is " << *new_child << std::endl
@@ -275,6 +282,7 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 		Locus *new_child = new Locus();
 		new_child->Start() = offset;
 		new_child->Stop() = entire.size();
+		new_child->ContractedLocus() = locus;
 		locus->AddChild(new_child);
 
 		if (m_verbose)
