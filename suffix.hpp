@@ -22,12 +22,17 @@ class Locus
 		void AddChild(Locus *new_child) { children.push_back(new_child); }
 		void RemoveChild(Locus *child) { children.remove(child); }
 
+		void AddTerminus(int index) { match_terminii.push_back(index); }
+		std::list<int> Terminii() { return match_terminii; }
+		void Terminii(const std::list<int> &new_terminii) { match_terminii=new_terminii; }
+
 		friend std::ostream &operator<<(std::ostream &os, Locus &locus);
 
 	private:
 		int m_start, m_stop;
 		std::list<Locus*> children;
 		Locus *m_contracted_locus;
+		std::list<int> match_terminii;
 };
 
 template <template <typename...> class Container, typename Element>

@@ -1,6 +1,12 @@
 std::ostream &operator<<(std::ostream &os, Locus &locus)
 {
 	os << "(" << locus.Start() << "," << locus.Stop() << ")";
+	os << "[";
+	for (auto t : locus.Terminii())
+	{
+		os << t << ",";
+	}
+	os << "]";
 	return os;
 }
 
@@ -125,6 +131,7 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 		Locus *terminal = new Locus();
 		terminal->Start() = -1;
 		terminal->Stop() = -1;
+		terminal->AddTerminus(offset);
 		locus->AddChild(terminal);
 		if (m_verbose)
 			std::cout << "Adding a new terminal locus." << std::endl;
@@ -211,9 +218,16 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 				 * on which we just completed a match.
 				 */
 				DoInsert(o, child);
+				child->AddTerminus(o);
 			}
 			else
 			{
+				/*
+				 * The distance that we have to split.
+				 */
+				int new_child_terminii_delta = child->Stop() - i;
+				std::list<int> new_child_terminii;
+
 				if (m_verbose)
 					std::cout << "Breaking apart an arc." << std::endl;
 
@@ -227,14 +241,21 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 				new_child->Start() = child->Start();
 				new_child->Stop() = i;
 
+				for (auto t : child->Terminii())
+					new_child_terminii.push_back(t - new_child_terminii_delta);
+
+				new_child_terminii.push_back(o);
+
 				left->Start() = i;
 				left->Stop() = child->Stop();
 
 				right->Start() = o;
 				right->Stop() = entire.size();
+				right->AddTerminus(o);
 
 				new_child->AddChild(right);
 				new_child->AddChild(left);
+				new_child->Terminii(new_child_terminii);
 
 				locus->RemoveChild(child);
 				locus->AddChild(new_child);
@@ -260,6 +281,7 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 		Locus *new_child = new Locus();
 		new_child->Start() = offset;
 		new_child->Stop() = entire.size();
+		new_child->AddTerminus(entire.size());
 		locus->AddChild(new_child);
 
 		if (m_verbose)
