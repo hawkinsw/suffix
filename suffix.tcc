@@ -20,7 +20,7 @@ void SuffixTreeBase<Container, Element>::PrintSubstrings(std::ostream &os, int o
 		Container<Element> new_base;
 		if (((*c)->Start() >= 0 && (*c)->Stop() >= 0))
 		{
-			for (int i = (*c)->Start(); i<(*c)->Stop(); i++)
+			for (int i = (*c)->Start(); i<=(*c)->Stop() && i<entire.size(); i++)
 				new_base.push_back(entire[i]);
 		}
 		DoPrintSubstrings(os, *c, new_base, occurence_filter);
@@ -47,7 +47,7 @@ int SuffixTreeBase<Container, Element>::DoPrintSubstrings(std::ostream &os, Locu
 		 */
 		if (((*c)->Start() >= 0 && (*c)->Stop() >= 0))
 		{
-			for (int i = (*c)->Start(); i<(*c)->Stop(); i++)
+			for (int i = (*c)->Start(); i<=(*c)->Stop() && i<entire.size(); i++)
 				new_base.push_back(entire[i]);
 		}
 		child_counter += DoPrintSubstrings(os, *c, new_base, occurence_filter);
@@ -80,7 +80,7 @@ void SuffixTreeBase<Container, Element>::DoPrint(std::ostream &os, Locus *locus,
 		 */
 		if (m_verbose && ((*c)->Start() >= 0 && (*c)->Stop() >= 0))
 		{
-			for (int i = (*c)->Start(); i<(*c)->Stop(); i++)
+			for (int i = (*c)->Start(); i<=(*c)->Stop() && i<entire.size(); i++)
 			{
 				locus_output_string << StringifyElement(entire[i]);
 			}
@@ -113,6 +113,15 @@ void SuffixTreeBase<Container, Element>::AddSuffix(unsigned int suffi)
 	DoInsert(suffi, m_root);
 }
 
+/*
+ * Here's an example string with examples of various indexes:
+ *
+ * b a n a n a
+ *
+ * _ _ _ _ _ _ $
+ *
+ * 0 1 2 3 4 5 6
+ */
 template <template <typename...> class Container, typename Element>
 void SuffixTreeBase<Container, Element>::DoInsert(
 	unsigned int offset,
@@ -175,7 +184,7 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 						std::cout << "-1";
 					std::cout << std::endl;
 				}
-				if (i>=child->Stop())
+				if (i>child->Stop())
 				{
 					/*
 					 * We have exhausted this arc's string.
@@ -225,7 +234,7 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 				/*
 				 * The distance that we have to split.
 				 */
-				int new_child_terminii_delta = child->Stop() - i;
+				int new_child_terminii_delta = child->Stop() - (i - 1);
 				std::list<int> new_child_terminii;
 
 				if (m_verbose)
@@ -239,12 +248,11 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 				Locus *right = new Locus();
 
 				new_child->Start() = child->Start();
-				new_child->Stop() = i;
+				new_child->Stop() = i - 1;
 
 				for (auto t : child->Terminii())
 					new_child_terminii.push_back(t - new_child_terminii_delta);
-
-				new_child_terminii.push_back(o);
+				new_child_terminii.push_back(o-1);
 
 				left->Start() = i;
 				left->Stop() = child->Stop();
