@@ -1,15 +1,3 @@
-std::ostream &operator<<(std::ostream &os, Locus &locus)
-{
-	os << "(" << locus.Start() << "," << locus.Stop() << ")";
-	os << "[";
-	for (auto t : locus.Terminii())
-	{
-		os << t << ",";
-	}
-	os << "]";
-	return os;
-}
-
 template <template <typename...> class Container, typename Element>
 void SuffixTreeBase<Container, Element>::PrintSubstrings(std::ostream &os, int occurence_filter)
 {
