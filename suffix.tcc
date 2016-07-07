@@ -90,6 +90,20 @@ void SuffixTreeBase<Container, Element>::Build(Container<Element> obj)
 	{
 		AddSuffix(i);
 	}
+
+	BuildLocusList(m_root);
+}
+
+template <template <typename...> class Container, typename Element>
+void SuffixTreeBase<Container, Element>::BuildLocusList(Locus *locus)
+{
+	m_locus_list.push_back(locus);
+	for (auto c = locus->ChildrenBegin();
+	          c != locus->ChildrenEnd();
+						c++)
+	{
+		BuildLocusList(*c);
+	}
 }
 
 template <template <typename...> class Container, typename Element>

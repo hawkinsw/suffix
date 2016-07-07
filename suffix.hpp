@@ -56,6 +56,10 @@ class SuffixTreeBase
 			return os;
 		}
 		void PrintSubstrings(std::ostream &, int occurence_filter = 0);
+
+		std::list<Locus*>::const_iterator LociiBegin() const { return m_locus_list.begin(); }
+		std::list<Locus*>::const_iterator LociiEnd() const { return m_locus_list.end(); }
+
 	protected:
 		void AddSuffix(unsigned int suffi);
 		void DoInsert(unsigned int offset, Locus *locus);
@@ -63,8 +67,10 @@ class SuffixTreeBase
 		virtual std::string StringifyElement(Element a)=0;
 		void DoPrint(std::ostream &os, Locus *locus, int ws=0);
 		int DoPrintSubstrings(std::ostream &os, Locus *locus, Container<Element> base, int occurence_filter);
+		void BuildLocusList(Locus *locus);
 
 		Locus *m_root;
+		std::list<Locus*> m_locus_list;
 		Container<Element> entire;
 		bool m_verbose;
 };
