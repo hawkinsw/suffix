@@ -1,5 +1,7 @@
 template <template <typename...> class Container, typename Element>
-void SuffixTreeBase<Container, Element>::PrintSubstrings(std::ostream &os, int occurence_filter)
+void SuffixTreeBase<Container, Element>::PrintSubstrings(
+	std::ostream &os,
+	int occurence_filter)
 {
 	for (auto c = m_root->ChildrenBegin();
 	          c != m_root->ChildrenEnd();
@@ -16,7 +18,11 @@ void SuffixTreeBase<Container, Element>::PrintSubstrings(std::ostream &os, int o
 }
 
 template <template <typename...> class Container, typename Element>
-int SuffixTreeBase<Container, Element>::DoPrintSubstrings(std::ostream &os, Locus *locus, Container<Element> base, int occurence_filter)
+int SuffixTreeBase<Container, Element>::DoPrintSubstrings(
+	std::ostream &os,
+	Locus *locus,
+	Container<Element> base,
+	int occurence_filter)
 {
 	int child_counter = 0;
 
@@ -28,11 +34,6 @@ int SuffixTreeBase<Container, Element>::DoPrintSubstrings(std::ostream &os, Locu
 		has_children = true;
 		Container<Element> new_base = base;
 
-		/*
-		 * We would like to be able to do substr()
-		 * here, but we can't guarantee that we have
-		 * that. So, we'll do it the slow way.
-		 */
 		if (((*c)->Start() >= 0 && (*c)->Stop() >= 0))
 		{
 			for (int i = (*c)->Start(); i<=(*c)->Stop() && i<entire.size(); i++)
@@ -61,11 +62,7 @@ void SuffixTreeBase<Container, Element>::DoPrint(std::ostream &os, Locus *locus,
 		for (int i = 0; i<ws; i++) os << " ";
 
 		locus_output_string << **c << ": ";
-		/*
-		 * We would like to be able to do substr()
-		 * here, but we can't guarantee that we have
-		 * that. So, we'll do it the slow way.
-		 */
+
 		if (m_verbose && ((*c)->Start() >= 0 && (*c)->Stop() >= 0))
 		{
 			for (int i = (*c)->Start(); i<=(*c)->Stop() && i<entire.size(); i++)
@@ -224,7 +221,13 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 			else
 			{
 				/*
-				 * The distance that we have to split.
+				 * This delta will tell how much we have to offset
+				 * the existing terminii to account for the fact
+				 * that we are splitting this arc. For example,
+				 *   [6,10]
+				 * O--------O
+				 * and we split at 8 means that we are going to have
+				 * to modify the terminii at this locus by 2.
 				 */
 				int new_child_terminii_delta = child->Stop() - (i - 1);
 				std::list<int> new_child_terminii;
@@ -241,6 +244,7 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 
 				new_child->Start() = child->Start();
 				new_child->Stop() = i - 1;
+				new_child->ContractedLocus() = locus;
 
 				for (auto t : child->Terminii())
 					new_child_terminii.push_back(t - new_child_terminii_delta);
@@ -263,7 +267,7 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 
 				locus->RemoveChild(child);
 				locus->AddChild(new_child);
-				new_child->ContractedLocus() = locus;
+
 				new_child->Descendents() = left->Descendents() + right->Descendents();
 
 				if (m_verbose)
@@ -289,6 +293,7 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 		new_child->Stop() = entire.size();
 		new_child->ContractedLocus() = locus;
 		new_child->Descendents() = 1;
+
 		locus->AddChild(new_child);
 		locus->Descendents() += new_child->Descendents();
 
