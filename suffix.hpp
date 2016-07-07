@@ -10,31 +10,36 @@
 class Locus
 {
 	public:
-		Locus() : m_start(0), m_stop(0), m_contracted_locus(NULL), descendents(-1){}
+		Locus() :
+			m_start(0),
+			m_stop(0),
+			m_descendents(-1),
+			m_contracted_locus(NULL) {}
 
 		int &Start() { return m_start; }
 		int &Stop() { return m_stop; }
-		int &Descendents() { return descendents; }
-
+		int &Descendents() { return m_descendents; }
 		Locus *&ContractedLocus() { return m_contracted_locus; }
 
-		std::list<Locus*>::iterator ChildrenBegin() { return children.begin(); }
-		std::list<Locus*>::iterator ChildrenEnd() { return children.end(); }
-		void AddChild(Locus *new_child) { children.push_back(new_child); }
-		void RemoveChild(Locus *child) { children.remove(child); }
+		std::list<Locus*>::iterator ChildrenBegin() { return m_children.begin(); }
+		std::list<Locus*>::iterator ChildrenEnd() { return m_children.end(); }
+		void AddChild(Locus *new_child) { m_children.push_back(new_child); }
+		void RemoveChild(Locus *child) { m_children.remove(child); }
 
-		void AddTerminus(int index) { match_terminii.push_back(index); }
-		std::list<int> Terminii() { return match_terminii; }
-		void Terminii(const std::list<int> &new_terminii) { match_terminii=new_terminii; }
+		void AddTerminus(int index) { m_match_terminii.push_back(index); }
+		std::list<int> Terminii() { return m_match_terminii; }
+		void Terminii(const std::list<int> &new_terminii) {
+			m_match_terminii=new_terminii;
+		}
 
 		friend std::ostream &operator<<(std::ostream &os, Locus &locus);
 
 	private:
 		int m_start, m_stop;
-		int descendents;
-		std::list<Locus*> children;
+		int m_descendents;
+		std::list<Locus*> m_children;
 		Locus *m_contracted_locus;
-		std::list<int> match_terminii;
+		std::list<int> m_match_terminii;
 };
 
 template <template <typename...> class Container, typename Element>
