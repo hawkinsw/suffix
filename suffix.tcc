@@ -10,7 +10,7 @@ void SuffixTreeBase<Container, Element>::PrintSubstrings(
 		Container<Element> new_base;
 		if (((*c)->Start() >= 0 && (*c)->Stop() >= 0))
 		{
-			for (int i = (*c)->Start(); i<=(*c)->Stop() && i<entire.size(); i++)
+			for (int i = (*c)->Start(); i<(*c)->Stop() && i<entire.size(); i++)
 				new_base.push_back(entire[i]);
 		}
 		DoPrintSubstrings(os, *c, new_base, occurence_filter);
@@ -36,7 +36,7 @@ int SuffixTreeBase<Container, Element>::DoPrintSubstrings(
 
 		if (((*c)->Start() >= 0 && (*c)->Stop() >= 0))
 		{
-			for (int i = (*c)->Start(); i<=(*c)->Stop() && i<entire.size(); i++)
+			for (int i = (*c)->Start(); i<(*c)->Stop() && i<entire.size(); i++)
 				new_base.push_back(entire[i]);
 		}
 		child_counter += DoPrintSubstrings(os, *c, new_base, occurence_filter);
@@ -65,7 +65,7 @@ void SuffixTreeBase<Container, Element>::DoPrint(std::ostream &os, Locus *locus,
 
 		if (m_verbose && ((*c)->Start() >= 0 && (*c)->Stop() >= 0))
 		{
-			for (int i = (*c)->Start(); i<=(*c)->Stop() && i<entire.size(); i++)
+			for (int i = (*c)->Start(); i<(*c)->Stop() && i<entire.size(); i++)
 			{
 				locus_output_string << StringifyElement(entire[i]);
 			}
@@ -187,7 +187,7 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 						std::cout << "-1";
 					std::cout << std::endl;
 				}
-				if (i>child->Stop())
+				if (i>=child->Stop())
 				{
 					/*
 					 * We have exhausted this arc's string.
@@ -243,7 +243,7 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 				 * and we split at 8 means that we are going to have
 				 * to modify the terminii at this locus by 2.
 				 */
-				int new_child_terminii_delta = child->Stop() - (i - 1);
+				int new_child_terminii_delta = child->Stop() - i;
 				std::list<int> new_child_terminii;
 
 				if (m_verbose)
@@ -257,12 +257,12 @@ void SuffixTreeBase<Container, Element>::DoInsert(
 				Locus *right = new Locus();
 
 				new_child->Start() = child->Start();
-				new_child->Stop() = i - 1;
+				new_child->Stop() = i;
 				new_child->ContractedLocus() = locus;
 
 				for (auto t : child->Terminii())
 					new_child_terminii.push_back(t - new_child_terminii_delta);
-				new_child_terminii.push_back(o-1);
+				new_child_terminii.push_back(o);
 
 				left->Start() = i;
 				left->Stop() = child->Stop();
